@@ -45,6 +45,9 @@ Please re-run with -DUSE_LIBTXC_DXTN=OFF if you don't want S3TC support.")
 	include_directories(${GL_INCLUDE_DIR})
 endif()
 
+find_library(DEVIL_LIBRARY IL)
+# include_directories
+
 # ---- compiler flags ---------------------------------------------------------
 if(MSVC)
 	# Force to always compile with W4
