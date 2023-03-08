@@ -4252,17 +4252,45 @@ vlBool CVTFFile::Resize(const vlByte *lpSourceRGBA8888, vlByte *lpDestRGBA8888, 
 
 	return nvDXTCompressWrapper(lpSourceRGBA8888, uiSourceWidth, uiSourceHeight, &Options, NVWriteCallback);
 #else
-	(void)lpSourceRGBA8888;
-	(void)lpDestRGBA8888;
-	(void)uiSourceWidth;
-	(void)uiSourceHeight;
-	(void)uiDestWidth;
-	(void)uiDestHeight;
-	(void)ResizeFilter;
-	(void)SharpenFilter;
+    ilInit();
+    iluInit();
 
-	LastError.Set("NVDXT support required for CVTFFile::Resize().");
-	return vlFalse;
+    vlUInt inSize = uiSourceWidth * uiSourceHeight * 4;//num pixels * bytes per pixel in rgba8888
+
+    if (!ilLoadDataL((void*)lpSourceRGBA8888, inSize, uiSourceWidth, uiSourceHeight, 1, 4))//(void*)lpSourceRGBA8888, sizeof(lpSourceRGBA8888), uiSourceWidth, uiSourceHeight, 1, 4 ))
+    {
+        char err[256];
+        snprintf(err, sizeof(err), "DevIL Load: %s", iluErrorString(ilGetError()));
+        LastError.Set(err);
+        return vlFalse;
+    }
+    if (!iluScale(uiDestWidth, uiDestHeight, 1))
+    {
+        char err[256];
+        snprintf(err, sizeof(err), "DevIL Scale: %s", iluErrorString(ilGetError()));
+        LastError.Set(err);
+        return vlFalse;
+    }
+    uint size = ilGetInteger(IL_IMAGE_SIZE_OF_DATA);
+    if (!ilSaveL(IL_RAW, lpDestRGBA8888, size))
+    {
+        char err[256];
+        snprintf(err, sizeof(err), "DevIL Save: %s", iluErrorString(ilGetError()));
+        LastError.Set(err);
+        return vlFalse;
+    }
+    return vlTrue;
+//	(void)lpSourceRGBA8888;
+//	(void)lpDestRGBA8888;
+    (void)uiSourceWidth;
+    (void)uiSourceHeight;
+//	(void)uiDestWidth;
+//	(void)uiDestHeight;
+    (void)ResizeFilter;
+    (void)SharpenFilter;
+
+//	LastError.Set("NVDXT support required for CVTFFile::Resize().");
+//	return vlFalse;
 #endif
 }
 
