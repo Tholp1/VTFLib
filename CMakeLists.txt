@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.26)
 
 project(VTFLib)
 
@@ -44,8 +44,10 @@ Please re-run with -DUSE_LIBTXC_DXTN=OFF if you don't want S3TC support.")
 	add_definitions(-DUSE_LIBTXC_DXTN)
 	include_directories(${GL_INCLUDE_DIR})
 endif()
-
+find_path(IL_INCLUDE_DIR IL/il.h)
+include_directories(${IL_INCLUDE_DIR})
 find_library(DEVIL_LIBRARY IL)
+find_library(DEVILU_LIBRARY ILU)
 # include_directories
 
 # ---- compiler flags ---------------------------------------------------------
